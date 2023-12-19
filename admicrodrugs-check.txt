@@ -1,0 +1,559 @@
+*** this command initiates a model check
+*** of the module ADMICRODRUGS
+
+red in MC-ADMICRODRUGS : 
+modelCheck( AM
+
+( *** set levels of initial inputs to rules
+IL1bini(6) IL6ini(5) IFNgini(5) TNFaini(5) 
+IL4ini(5) IL13ini(5) IGF1ini(5) TGFbini(5)
+
+*** set levels of drugs
+aura(1) bort(0) dasa(0) glim(0) ibup(0) nalo(1) nico(0) rosi(0) ruxo(0) thal(0)
+
+*** set levels of Ab and other input compounds
+Ab(1) LPS(1) retino(0)
+
+*** set initial levels of YOUNG inputs
+ACh(0) CD22(0) CD200(0) CX3CL1(0) TREM2L(0) 
+
+*** set levels of some constitutive elements
+CD40L(1) IL1Ra(1) RasCon(2) RXRcon(1)
+a6b1(1) CD14(1) CD36(1) CD47(1) SRA(1)
+
+*** set initial levels of cytokines that have 
+*** separate initial level settings
+IL1b(0) IL6(0) IFNg(0) TNFa(0) 
+IL4(0) IL13(0) IGF1(0) TGFb(0) 
+
+*** set initial levels of receptors
+TLR2(0) TLR4(0) 
+IL1R(0) IL6R(0) IFNR(0) TNFR(0)
+IL4R(0) IL13R(0) IGF2R(0) IRIGF1R(0) TGFR(0)
+a7nAChR(0) CD40(0) CD45(0) CD200R(0) CX3CR1(0) TREM2(0)
+
+*** set initial levels of signaling molecules
+DAP12(0) Syk(0) GRB2(0) Lyn(0) Vav(0) Rac(0) NADPH(0)
+MyD88(0) IRAK(0) TRAF6(0) TRIF(0) RIP1(0) TAK1(0) 
+Dok1(0) Dok2(0) SHIP1(0) GAP(0) Ras(0)
+MAP3K(0) MAP2K(0) MEK(0) ERK(0) p38MAPK(0) JNK(0) AP1(0)
+IKK(0) IkB(0) NFkB(0)
+Gq(0) PGE2(0) EP2(0) PKC(0) RXR(0) LXRb(0) PPARg(0)
+PI3K(0) Akt(0) FOXO(0) SOD(0) Smad(0)
+JAK1(0) JAK2(0) STAT1(0) STAT3(0) STAT6(0)
+
+*** set initial levels of other inflammatory mediators
+IL12(0) IL17(0) iNOS(0) COX2(0) ROS(0) NO(0) 
+
+*** set initial levels of other anti-inflammatory mediators
+Ym1(0) Arg1(0) IL10(0) cyto(0) phago(0)
+
+*** set initial levels of adjustable saturations
+proSat(0) antiSat(0)  ),
+
+
+*** RESULTS
+*** note: conditions are all neurotoxic, starting from the 
+*** old case with Ab(1) and LPS(1)
+
+
+*** the followign have aura(1) only
+
+*** [] NFkBle5              *** NFkB always less than or equal to 5
+                            *** true
+    
+*** [] AP1gt7               *** AP1 always greater than 7
+                            *** true
+
+*** AP1gt7 => IL1bEQ7       *** AP1 greater than 7 implies IL1b equals 7
+                            *** in other words, IL1b is 7 whenever AP1 greater than 7
+                            *** counterexample
+
+*** AP1gt7 |-> IL1bEQ7      *** AP1 greater than 7 leads to IL1b equals 7
+                            *** note: this is like a weak form of implies
+                            *** true
+
+*** IL1bEQ7 => [] IL1bEQ7   *** IL1b at 7 means IL1b stays at 7 henceforth
+                            *** counterexample: because IL1b goes up and down again
+
+*** IL1bEQ7 => AP1gt7       *** AP1 is greater than 7 whenever IL1b equals 7
+                            *** true
+                            *** what the last four say is that AP1 is always greater than 7
+                            *** but that does not imply that IL1b is 7 because IL1b goes up to 7
+                            *** but does not then stay at 7; however AP1 is always greater than 7
+                            *** and is so whenever IL1b is 7; IL1b is 7 in the only stable state  
+                            *** so AP1 stays above 7 and pulls IL1b up even after if falls down
+
+*** <> STAT1eq7             *** STAT1 eventually equals 7
+                            *** true
+
+*** STAT1eq7 => IL4eq7      *** STAT1 at 7 implies IL4 at 7
+                            *** in other words, IL4 is 7 whenever STAT1 is 7
+                            *** true
+
+*** STAT1eq7 => TGFbEQ7     *** STAT1 at 7 implies TGFb at 7
+                            *** true
+
+*** STAT1eq7 => IGF1eq3     *** STAT1 at 7 implies IGF1 at 3
+                            *** true
+
+*** <> ERKgt7               *** eventually ERK is great than 7
+                            *** true
+                            *** this means that with aura ERK can still rise above high and let
+                            *** TGFb at the high level drive phago to the high level
+
+*** <> STAT3eq7             *** STAT3 eventually equals 7
+                            *** true
+
+*** STAT3eq7 => IL1bEQ7     *** STAT3 at 7 implies IL1b at 7
+                            *** counterexample: AP1 drives IL1b first
+
+*** <> ROSeq7               *** eventually ROS equals 7
+                            *** true
+
+
+
+
+*** the following have aura(1) and ruxo(1)
+
+*** <> STAT1eq7             *** STAT1 eventually equals 7
+                            *** counterexample: because ruxo suppresses JAK2
+                            *** so with ruxo the autocrine bridge never gets crossed so
+                            *** all factors and phago stay at base
+
+*** [] NFkBle5              *** NFkB always less than or equal to 5
+                            *** true
+    
+*** <> ROSeq7               *** eventually ROS equals 7
+                            *** true
+
+
+
+
+*** the following have nalo(1) only
+
+*** <> NFkBeq7              *** NFkB eventually gets high
+                            *** true
+
+*** [] NFkBle7              *** NFkB always less than or equal to 7
+                            *** true
+
+*** NFkBeq7 => IL1bEQ7      *** NFkBeq7 implies IL1b equals 7
+                            *** true
+                            *** so NFkB drives up IL1b in this case
+
+*** <> STAT1eq7             *** STAT1 eventually equals 7
+                            *** true
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** counterexample: by blocking TLR4 nalo prevents ERK rising above high
+                            *** which it would need to do to let Smad (and TGFb) drive phago high
+ 
+*** <> ROSeq7               *** eventually ROS equals 7
+                            *** true
+
+
+
+
+*** the following have nalo(1) and ruxo(1)
+
+*** <> STAT1eq7             *** STAT1 eventually equals 7
+                            *** counterexample
+
+*** [] NFkBle7              *** NFkB always less than or equal to 7
+                            *** true
+
+*** <> ROSeq7               *** eventually ROS equals 7
+                            *** true
+
+
+
+
+*** the following have aura(1) and nalo(1)
+
+*** [] NFkBle4              *** NFkB is always less than or equal to 4
+                            *** true
+
+*** NFkBle4 => IL1bEQ5      *** IL1b is 5 whenever NFkB is less than or equal to 4
+                            *** true
+
+*** NFkBle4 => [] IL1bEQ5   *** IL1b is always 5 whenever NFkB is less than or equal to 4
+                            *** true (I think this means the same as the above but may be stronger)
+
+*** NFkBle4 => [] IFNgEQ5   *** IFNg is always 5 whenever NFkB is 4 or less
+                            *** true, so the autocrine bridge is not crossed
+
+*** NFkBle4 => [] (IL4eq5 /\ TGFbEQ5) *** both IL4 and TGFb are always 5 whenever NFkB is 4 or less
+                            *** true
+
+*** NFkBle4 => [] IGF1eq5   *** IGF1 is always 5 whenever NFkB is 4 or less
+                            *** true
+
+*** NFkBle4 => <> phagoEQ3  *** NFkB at 4 or less implies that phago eventually is 3
+                            *** true
+
+*** [] AP1eq6               *** AP1 is always 6
+                            *** counterexample: AP1 can pop up to 7 (see next result)
+
+*** <> AP1eq7               *** eventually AP1 equals 7
+                            *** true
+
+*** <> AP1eq6               *** eventually AP1 equals 6
+                            *** true, so AP1 pops up to 7 and is then brought back down to 6
+
+*** AP1eq6 => IL1bEQ5       *** AP1 equal to 6 implies that IL1b equals 5
+                            *** true
+
+**** (AP1eq6 /\ NFkBle4) => IL1bEQ5 *** AP1 equals 6 and NFkB less than 4 implies that IL1b equals 5
+                            *** true, so maybe low AP1 and low NFkB is keeping IL1b at base (no!)
+
+**** (AP1eq7 /\ NFkBle4) => IL1bEQ5 *** AP1 equals 6 and NFkB less than 4 implies that IL1b equals 5
+                            *** true!  so it really is NFkBle4 that keeps IL1b at base
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** counterexample: because nalo blocks TLR4 is does not allow ERK to rise 
+                            *** above high, but it would need to do that in order to let TGFb at high
+                            *** pull phago up to high
+
+*** <> ERKeq5               *** eventually ERK equals 5
+                            *** true, and since ERK eventually equals TGFb, 
+                            *** which is also at 5, phago goes to 3
+
+*** <> ROSeq7               *** eventually ROS equals 7
+                            *** true
+
+
+
+
+*** the following have glim(1) only
+  
+*** [] IGF1le5              *** IGF1 always less than or equal to 5
+                            *** counterexample: IGF1 goes up to 7 but comes down to 3
+                            *** note: this case has only one stable state
+
+*** <> IGF1eq7              *** IGF1 eventually equals 7
+                            *** counterexample: some pathways through the state space
+                            *** never see IGF1 greater than 5 even though there is 
+                            *** only one stable state
+ 
+*** IGF1eq7 => [] IGF1eq7   *** if IGF1 reaches 7 then it equals 7 henceforth
+                            *** counterexample: because IGF1 goes up to 7 but comes down to 3
+
+*** <> IGF1eq3              *** eventually IGF1 equals 3
+                            *** true, because IGF1 is 3 in the only stable state in this case
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** counterexample: there is only one stable state in this case
+                            *** but maybe there is more than one way to get there over at least
+                            *** onw of which PPARg never gets to 9
+
+*** [] ROSeq5               *** ROS always equals 5
+                            *** true, all glim does by itself is keep ROS at base
+                            *** this is becasue glim fully activates IRIGF1R
+
+
+*** the following have aura(1), nalo(1), and glim(1)
+
+*** [] ROSeq5               *** ROS always equals 5
+                            *** true, this is becasue glim fully activates IRIGF1R
+
+*** [] NFkBle4              *** NFkB is always 4 or less
+                            *** true, as with aura alone or aura and nalo
+                            *** this prevents rise of pro-inflammatory cytokines
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** counterexample: there are two stable states in this case
+                            *** over one of which PPARg never gets to 9
+
+*** PPARgEQ9 => IL4eq7      *** IL4 is at 7 whenever PPARg is at 9
+                            *** true, but PPARg is not at 9 very much
+ 
+*** PPARgEQ9 |-> IL4eq7     *** PPARg at 9 leads to IL4 at 7
+                            *** true, so PPARg pops up to 9 and that leads to IL4 at 7
+
+*** IL4eq7 <=> STAT6eq7     *** IL4 at 7 and STAT6 at 7 mutually imply
+                            *** counterexample
+
+*** IL4eq7 => STAT6eq7      *** IL4 at 7 implies STAT6 at 7
+                            *** counterexample: IL4 can reach 7 before the rule that sets
+                            *** IL4R which must execute before STAT6 can be driven up by IL4 
+
+*** IL4eq7 |-> STAT6eq7     *** IL4 at 7 leads to STAT6 at 7
+                            *** counterexample: IL4 can reach 7 before the rule that sets
+                            *** IL4R which must execute before STAT6 can be driven up by IL4 
+
+*** STAT6eq7 => IL4eq7      *** STAT6 at 7 implies IL4 at 7
+                            *** true
+
+*** <> ERKeq7               *** eventually ERK equals 7
+                            *** counterexample: because nalo blocks TLR4 it does not allow ERK to rise 
+                            *** to high, and in this case that means ERK is not equal to TGFb so TGFb
+                            *** can drive phago to its high level
+
+
+
+
+*** the following have glim(1) and rosi(1)
+
+*** [] ROSeq5               *** ROS always equals 5
+                            *** true, this is becasue glim fully activates IRIGF1R
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** counterexample: there are three stable states in this case
+                            *** over at least one of which PPARg never gets to 9
+
+*** <> PPARgGT7             *** eventually PPARg is greater than 7
+                            *** counterexample: again, there are three stable states in this case
+
+*** <> NFkBle4              *** eventually NFkB is 4 or less
+                            *** counterexample: again due to the three stable states
+
+*** PPARgEQ9 => NFkBle4     *** NFkB is at 4 or less whenever PPARg is at 9
+                            *** true, but PPARg is not at 9 very much
+
+*** PPARgGT7 => NFkBle4     *** NFkB is at 4 or less whenever PPARg is greater than 7
+                            *** true
+
+*** NFkBle4 => IL1bEQ5      *** NFkB at 4 or less implies that IL1b is at 5
+                            *** counterexample
+
+*** NFkBle4 |-> IL1bEQ5     *** NFkB at 4 or less leads to IL1b at 5
+                            *** true
+
+*** IL1bEQ5 => NFkBle4      *** IL1b at 5 implies NFkB at 4 or less
+                            *** true
+
+*** IFNgEQ5 => NFkBle4      *** IFNg at 5 implies NFkB at 4 or less
+                            *** true
+
+*** PPARgEQ9 => IL4eq7      *** IL4 is at 7 whenever PPARg is at 9
+                            *** true, but PPARg is not at 9 very much
+ 
+*** PPARgEQ9 |-> IL4eq7     *** PPARg at 9 leads to IL4 at 7
+                            *** true, so PPARg pops up to 9 and that leads to IL4 at 7
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** true, and since TGFb is 7, and so not equal to ERK, phago is high
+
+                            *** the rest are counterexamples
+                            *** its hard to prove propositions because of the three stable states
+
+*** PPARgGT7 |-> IL4eq7     *** PPARg greater than 7 leads to IL4 at 7
+                            *** counterexample
+
+*** PPARgGT7 => IL4eq7      *** PPARg greater than 7 implies IL4 at 7
+                            *** counterexample
+
+*** STAT6eq7 => IL4eq7      *** STAT6 at 7 implies IL4 at 7
+                            *** counterexample
+
+*** STAT6eq7 |-> IL4eq7     *** STAT6 at 7 implies IL4 at 7
+                            *** counterexample
+
+*** IL4eq7 |-> STAT6eq7     *** IL4 at 7 leads to STAT6 at 7
+                            *** counterexample
+
+**** (ERKgt7 /\ TGFbEQ7) => phagoEQ7  *** ERK greater than 7 and TGFb at 7 imply phago at 7
+                            *** counterexample
+
+**** (ERKgt7 /\ TGFbEQ7) |-> phagoEQ7  *** ERK greater than 7 and TGFb at 7 imply phago at 7
+                            *** counterexample
+
+
+
+*** the following have glim(1), nico(1), and rosi(1)
+
+*** [] NADPHlt2             *** NADPH is always less than 2
+                            *** true, as it must be since it is reduced by nico via a7nAChR
+
+
+
+*** the following have aura(1), glim(1), and nico(1)
+
+*** <> NFkBeq5              *** NFkB eventually equals 5
+                            *** true (and it must be in both stable states)
+
+*** [] NFkBle5              *** NFkB always less than or equal to 5
+                            *** true (and it must be in both stable states)
+
+*** <> (IL1bEQ5 /\ IGF1eq5) *** eventually both IL1b and IGF1 equal 5
+                            *** true (and it must be in both stable states)
+
+*** NFkBle5 => (IL1bEQ5 /\ IGF1eq5) *** eventually both IL1b and IGF1 equal 5
+                            *** true (and it must be in both stable states)
+                            *** so NFkB at 5 keeps pro-inflammatories at 5 and so
+                            *** they cannot drive down phago
+
+*** [] ROSeq3               *** ROS always equals 5
+                            *** true (and it must be in both stable states)
+
+*** PPARgEQ9 |-> IL4eq7     *** PPARg at 9 leads to IL4 at 7
+                            *** true, so PPARg pops up to 9 and that leads to IL4 at 7
+
+*** IL4eq7 |-> STAT6eq7     *** IL4 at 7 leads to STAT6 at 7
+                            *** counterexample: IL4 can reach 7 before the rule that sets
+                            *** IL4R which must execute before STAT6 can be driven up by IL4 
+                            *** this might be true along the path leading to the good state
+
+*** STAT6eq7 => IL4eq7      *** STAT6 at 7 implies IL4 at 7
+                            *** true
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** true, and since TGFb is 7 this allows TGFb to drive phago to 7
+
+*** <> PPARgEQ5             *** eventually PPARg equals 5
+                            *** true (and this must be in both stable states)
+
+
+
+
+
+*** the following have nalo(1), glim(1), and nico(1)
+
+*** <> (IL1bEQ5 /\ IGF1eq5) *** eventually both IL1b and IGF1 equal 5
+                            *** true (and it must be in both stable states)
+
+*** NFkBle5 |-> IL1bEQ5     *** NFkB at 5 or less leads to IL1b at 5
+                            *** true
+
+*** NFkBle5 |-> IFNgEQ5     *** NFkB at 5 or less leads to IFNg at 5
+                            *** true
+
+*** <> PPARgEQ5             *** eventually PPARg equals 5
+                            *** true (and this must be in both stable states)
+
+**** (PPARgEQ5 /\ STAT1eq5) => IGF1eq5  *** PPARg and STAT1 both at 5 imply IGF1eq5
+                            *** true, so both conditons are necessary here
+
+*** PPARgEQ9 |-> IL4eq7     *** PPARg at 9 leads to IL4 at 7
+                            *** true, so PPARg pops up to 9 and that leads to IL4 at 7
+
+*** STAT6eq7 => IL4eq7      *** STAT6 at 7 implies IL4 at 7
+                            *** true
+
+*** <> ERKlt7               *** eventually ERK is less than 7
+                            *** true, and since TGFb is 7 this allows TGFb to drive phago to 7
+
+*** [] ROSeq3               *** ROS always equals 5
+                            *** true (and it must be in both stable states)
+                           
+                            *** the rest are counterexamples
+
+*** <> NFkBeq5              *** NFkB eventually equals 5
+                            *** counterexample: and this is unexpected because NFkB is 5
+                            *** in both stable states associated with this combo 
+
+*** [] NFkBle5              *** NFkB always less than or equal to 5
+                            *** counterexample: NFkB can pop up to 7
+
+*** NFkBle5 => IL1bEQ5      *** NFkB at 5 or less implies IL1b at 5
+                            *** counterexample
+
+*** NFkBle5 |-> STAT1eq5    *** NFkB at 5 or less leads to STAT1 at 5
+                            *** counterexample
+
+*** IFNgEQ5 |-> STAT1eq5    *** IFNg at 5 leads to STAT1 at 5
+                            *** counterexample
+
+*** STAT1eq5 => IFNgEQ5     *** STAT1 at 5 implies IFNg at 5
+                            *** counterexample
+
+*** STAT1eq5 => IGF1eq5     *** STAT1 at 5 implies IGF1 at 5
+                            *** counterexample
+
+*** STAT1eq5 |-> IGF1eq5    *** STAT1 at 5 implies IGF1 at 5
+                            *** counterexample
+
+*** PPARgEQ5 |-> IGF1eq5    *** PPARg at 5 leads to IGF1 at 5
+                            *** counterexample
+
+**** (PPARgEQ5 /\ NFkBle5) => IGF1eq5  *** PPARg at 5 and NFkB at 5 or less imply IGF1eq5
+                            *** counterexample
+
+*** IL4eq7 |-> STAT6eq7     *** IL4 at 7 leads to STAT6 at 7
+                            *** counterexample: IL4 can reach 7 before the rule that sets
+                            *** IL4R which must execute before STAT6 can be driven up by IL4 
+                            *** this might be true along the path leading to the good state
+
+
+
+
+*** the following have glim(1) only
+
+*** [] ROSeq5               *** ROS always equals 5
+                            *** true, all glim does by itself is keep ROS at base
+                            *** this is becasue glim fully activates IRIGF1R
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** counterexample
+
+*** PPARgEQ9 => [] PPARgEQ9 *** once PPARg rises to 9 it stays at 9
+                            *** counterexample: so PPARg does not stay at 9
+
+
+
+
+*** the following has ibup(1) only
+
+*** <> PPARgEQ3             *** eventually PPARg equals 3
+                            *** true
+
+
+
+
+*** the following have glim(1) and ibup(1)
+
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** true
+
+*** PPARgEQ9 => [] PPARgEQ9 *** once PPARg rises to 9 it stays at 9
+                            *** true, so once PPARg gets to 9 it stays there
+
+*** <> NFkBeq3              *** eventually NFkBeq3
+                            *** true
+
+*** PPARgEQ9 => NFkBeq3     *** PPARg at 9 implies NFkB at 3
+                            *** true
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** true, and since TGFb is 7 this allows TGFb to drive phago to 7
+
+*** [] ROSeq5               *** ROS always equals 5
+                            *** true, this is becasue glim fully activates IRIGF1R
+
+
+
+
+*** the following have glim(1), ibup(1), and nico(1)
+
+
+*** <> PPARgEQ9             *** eventually PPARg equals 9
+                            *** true
+
+*** PPARgEQ9 => [] PPARgEQ9 *** once PPARg rises to 9 it stays at 9
+                            *** true, so once PPARg gets to 9 it stays there
+
+*** <> NFkBeq3              *** eventually NFkBeq3
+                            *** true
+
+*** PPARgEQ9 => NFkBeq3     *** PPARg at 9 implies NFkB at 3
+                            *** true
+
+*** <> ERKgt7               *** eventually ERK is greater than 7
+                            *** true, and since TGFb is 7 this allows TGFb to drive phago to 7
+
+*** [] ROSeq3               *** ROS always equals 5
+                            *** true
+
+
+
+ ) . *** here is the close-paren and period that ends the command
+
+
+
+
+
+
+
+

@@ -1,0 +1,117 @@
+*** this module trys to set up
+*** checking of the ADMICRODRUGS model
+
+in admicrodrugs.txt .
+in model-checker.maude .
+
+mod MC-ADMICRODRUGS is
+  including ADMICRODRUGS .
+  including MODEL-CHECKER .
+
+  var X : Nat .
+  var S : State .
+
+  op  AM : State -> State [ctor] .
+  ops IFNgEQ3 IFNgEQ5 IFNgEQ7 IL6eq3 IL6eq7 IL13eq3 IL13eq7 : -> Prop .
+  ops IL1bEQ3 IL1bEQ5 IL1bEQ7 TNFaEQ3 TNFaEQ7 ROSeq3 ROSeq5 ROSeq7 : -> Prop .
+  ops ERKeq5 ERKeq7 ERKlt7 ERKgt7 phagoEQ3 phagoEQ7 Ym1eq3 Ym1eq7 : -> Prop .
+  ops Arg1eq3 Arg1eq7 IL4eq3 IL4eq5 IL4eq7 IL10eq3 IL10eq7 : -> Prop .
+  ops TGFbEQ3 TGFbEQ5 TGFbEQ7 IGF1eq3 IGF1eq5 IGF1eq7 IGF1le5 : -> Prop .
+  ops STAT1eq3 STAT1eq5 STAT1eq7 STAT6eq3 STAT6eq5 STAT6eq7 STAT6eq8 : -> Prop .
+  ops AP1eq3 AP1eq5 AP1eq6 AP1eq7 AP1eq8 AP1gt7 STAT3eq3 STAT3eq5 STAT3eq7 : -> Prop .
+  ops EP2eq3 GqEQ7 GqEQ8 PKCeq3 PKCeq9 : -> Prop .
+  ops PPARgEQ3 PPARgEQ5 PPARgGT5 PPARgEQ7 PPARgGT7 PPARgEQ9 : -> Prop .
+  ops NFkBeq3 NFkBeq5 NFkBeq7 NFkBeq9 NFkBle4 NFkBle5 NFkBle7 : -> Prop .
+  ops SmadEQ3 SmadEQ7 p38MAPKeq6 p38MAPKeq7 p38MAPKeq8 JNKeq6 JNKeq7 JNKeq8 : -> Prop .
+  op  NADPHlt2 : -> Prop .
+
+  eq AM(S IFNg(3))  |= IFNgEQ3 =  true .
+  eq AM(S IFNg(5))  |= IFNgEQ5 =  true .
+  eq AM(S IFNg(7))  |= IFNgEQ7 =  true .
+  eq AM(S IL6(3))   |= IL6eq3  = true .
+  eq AM(S IL6(7))   |= IL6eq7  = true .
+  eq AM(S IL13(3))  |= IL13eq3  = true .
+  eq AM(S IL13(7))  |= IL13eq7  = true .
+
+  eq AM(S IL1b(3))  |= IL1bEQ3 =  true .
+  eq AM(S IL1b(5))  |= IL1bEQ5 =  true .
+  eq AM(S IL1b(7))  |= IL1bEQ7 =  true .
+  eq AM(S TNFa(3))  |= TNFaEQ3 =  true .
+  eq AM(S TNFa(7))  |= TNFaEQ7 =  true .
+  eq AM(S ROS(3))   |= ROSeq3 =   true .
+  eq AM(S ROS(5))   |= ROSeq5 =   true .
+  eq AM(S ROS(7))   |= ROSeq7 =   true .
+  eq AM(S phago(3)) |= phagoEQ3 = true .
+  eq AM(S phago(7)) |= phagoEQ7 = true .
+  eq AM(S ERK(5))   |= ERKeq5 =   true .
+  eq AM(S ERK(7))   |= ERKeq7 =   true .
+  eq AM(S ERK(X))   |= ERKlt7 =   X < 7 .
+  eq AM(S ERK(X))   |= ERKgt7 =   X > 7 .
+  eq AM(S Ym1(3))   |= Ym1eq3 =   true .
+  eq AM(S Ym1(7))   |= Ym1eq7 =   true .
+  eq AM(S Arg1(3))  |= Arg1eq3 =  true .
+  eq AM(S Arg1(7))  |= Arg1eq7 =  true .
+  eq AM(S IL4(3))   |= IL4eq3  =  true .
+  eq AM(S IL4(5))   |= IL4eq5  =  true .
+  eq AM(S IL4(7))   |= IL4eq7  =  true .
+  eq AM(S IL10(3))  |= IL10eq3  = true .
+  eq AM(S IL10(7))  |= IL10eq7  = true .
+  eq AM(S TGFb(3))  |= TGFbEQ3 =  true .
+  eq AM(S TGFb(5))  |= TGFbEQ5 =  true .
+  eq AM(S TGFb(7))  |= TGFbEQ7 =  true .
+  eq AM(S IGF1(3))  |= IGF1eq3 =  true .
+  eq AM(S IGF1(5))  |= IGF1eq5 =  true .
+  eq AM(S IGF1(7))  |= IGF1eq7 =  true .
+  eq AM(S IGF1(X))  |= IGF1le5 =  X <= 5 .
+
+  eq AM(S AP1(3))   |= AP1eq3 =   true .
+  eq AM(S AP1(5))   |= AP1eq5 =   true .
+  eq AM(S AP1(6))   |= AP1eq6 =   true .
+  eq AM(S AP1(7))   |= AP1eq7 =   true .
+  eq AM(S AP1(8))   |= AP1eq8 =   true .
+  eq AM(S AP1(X))   |= AP1gt7 =   X > 7 .
+  eq AM(S STAT1(3)) |= STAT1eq3 = true .
+  eq AM(S STAT1(5)) |= STAT1eq5 = true .
+  eq AM(S STAT1(7)) |= STAT1eq7 = true .
+  eq AM(S STAT3(3)) |= STAT3eq3 = true .
+  eq AM(S STAT3(5)) |= STAT3eq5 = true .
+  eq AM(S STAT3(7)) |= STAT3eq7 = true .
+  eq AM(S STAT6(3)) |= STAT6eq3 = true .
+  eq AM(S STAT6(5)) |= STAT6eq5 = true .
+  eq AM(S STAT6(7)) |= STAT6eq7 = true .
+  eq AM(S STAT6(8)) |= STAT6eq8 = true .
+
+  eq AM(S EP2(3))   |= EP2eq3 =   true .
+  eq AM(S Gq(7))    |= GqEQ7 =    true .
+  eq AM(S Gq(8))    |= GqEQ8 =    true .
+  eq AM(S PKC(3))   |= PKCeq3 =   true .
+  eq AM(S PKC(9))   |= PKCeq9 =   true .
+  eq AM(S PPARg(3)) |= PPARgEQ3 = true .
+  eq AM(S PPARg(5)) |= PPARgEQ5 = true .
+  eq AM(S PPARg(X)) |= PPARgGT5 = X > 5 .
+  eq AM(S PPARg(X)) |= PPARgGT7 = X > 7 .
+  eq AM(S PPARg(7)) |= PPARgEQ7 = true .
+  eq AM(S PPARg(9)) |= PPARgEQ9 = true .
+  eq AM(S NFkB(3))  |= NFkBeq3 =  true .
+  eq AM(S NFkB(5))  |= NFkBeq5 =  true .
+  eq AM(S NFkB(7))  |= NFkBeq7 =  true .
+  eq AM(S NFkB(9))  |= NFkBeq9 =  true .
+  eq AM(S NFkB(X))  |= NFkBle4 =  X <= 4 .
+  eq AM(S NFkB(X))  |= NFkBle5 =  X <= 5 .
+  eq AM(S NFkB(X))  |= NFkBle7 =  X <= 7 .
+
+  eq AM(S Smad(3))    |= SmadEQ3 =  true .
+  eq AM(S Smad(7))    |= SmadEQ7 =  true .
+
+  eq AM(S p38MAPK(6)) |= p38MAPKeq6 = true .
+  eq AM(S p38MAPK(7)) |= p38MAPKeq7 = true .
+  eq AM(S p38MAPK(8)) |= p38MAPKeq8 = true .
+
+  eq AM(S JNK(6))     |= JNKeq6     = true .
+  eq AM(S JNK(7))     |= JNKeq7     = true .
+  eq AM(S JNK(8))     |= JNKeq8     = true .
+
+  eq AM(S NADPH(X))   |= NADPHlt2   = X < 2 .
+
+endm
+

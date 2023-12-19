@@ -1,0 +1,471 @@
+*** this module specifics the initial AD microglia model
+
+mod ADMICRODRUGS is
+  protecting INT .
+  sort State .
+
+  ops aura bort dasa glim ibup nalo nico rosi ruxo thal  : Int -> State [ctor format (c! o)] .
+  ops Ab LPS IFNg retino                                 : Int -> State [ctor format (g! o)] .
+  ops IL1b ROS phago IL4 IGF1                            : Int -> State [ctor format (r! o)] .
+  ops TNFa Ym1 Arg1 IL10 TGFb                            : Int -> State [ctor] .
+  ops IL6 IL12 IL13 IL17 iNOS COX2                       : Int -> State [ctor] .
+  ops IL1R IL1Ra IL6R IFNR TNFR                          : Int -> State [ctor] .
+  ops IL4R IL13R IGF2R IRIGF1R TGFR                      : Int -> State [ctor] .
+  ops TLR2 TLR4 a6b1 CD14 CD36 CD47 SRA                  : Int -> State [ctor] .
+  ops ACh CD22 CD40L CD200 CX3CL1 TREM2L                 : Int -> State [ctor format (y! o)] .
+  ops a7nAChR CD45 CD40 CD200R CX3CR1 TREM2              : Int -> State [ctor] .
+  ops DAP12 Syk GRB2 Lyn Vav Rac NADPH NO                : Int -> State [ctor] .
+  ops MyD88 IRAK TRAF6 TRIF RIP1 TAK1                    : Int -> State [ctor] .
+  ops Dok1 Dok2 SHIP1 GAP RasCon Ras MAP3K MAP2K         : Int -> State [ctor] .
+  ops Gq PGE2 EP2 RXR RXRcon LXRb IKK IkB                : Int -> State [ctor] .
+  ops PKC PPARg NFkB MEK p38MAPK JNK ERK AP1             : Int -> State [ctor format (m! o)] .
+  ops PI3K Akt FOXO SOD                                  : Int -> State [ctor] .
+  ops JAK1 JAK2 STAT1 STAT3 STAT6                        : Int -> State [ctor] .
+  ops Smad cyto                                          : Int -> State [ctor] .
+  ops IL1bini IL4ini IL6ini IL13ini                      : Int -> State [format (b! o)] . 
+  ops TNFaini IFNgini IGF1ini TGFbini                    : Int -> State [format (b! o)] . 
+  ops proSat antiSat                                     : Int -> State [ctor] .
+  ops boost low base high over sat                       : -> Int .
+  ops satLow thresh brake                                : -> Int .
+  op _ _                                                 : State State -> State [assoc comm ctor] .
+
+  vars X X1 X2 X3 X4 X5 X6 X7 X8 Y Y1 Y2 Y3 Y4 Y5 Y6 Y7 Y8 Z : Int .
+
+  eq boost = 1 .
+  eq low   = 3 .
+  eq base  = 5 .
+  eq high  = 7 .
+  eq over  = 9 .
+  eq sat   = 10 .
+
+  eq satLow = 5 .
+  eq thresh = 1 .
+  eq brake = 10 .
+  
+  eq [setIL1Rini]     : IL1bini(X1) IL1Ra(X2) IL1R(Y) = 
+                                    IL1Ra(X2) IL1R(max(X1 - X2, 0)) .
+  eq [setTNFRini]     : TNFaini(X)  TNFR(Y) = 
+                                    TNFR(X) .
+  eq [setIFNRini]     : IFNgini(X)  IFNR(Y) = 
+                                    IFNR(X) .
+  eq [setIL6Rini]     : IL6ini(X)   IL6R(Y) = 
+                                    IL6R(X) .
+  eq [setIL4Rini]     : IL4ini(X)   IL4R(Y) =
+                                    IL4R(X) .
+  eq [setIL13Rini]    : IL13ini(X)  IL13R(Y) =
+                                    IL13R(X) .
+  eq [setTGFRini]     : TGFbini(X)  TGFR(Y) =
+                                    TGFR(X) .
+  eq [setIGFRini]     : IGF1ini(X1) glim(X2)  IGF2R(Y1)  IRIGF1R(Y2) =
+                                    glim(X2)  IGF2R(if X2 == 1 then high - 1 else X1 fi)  
+                                            IRIGF1R(if X2 == 1 then high     else X1 fi) .
+
+
+
+  ceq [seta7nAChR]    : ACh(X1) nico(X2) a7nAChR(Y) = 
+                        ACh(X1) nico(X2) 
+                        a7nAChR(if X2 == 1 then 2 else X1 fi) 
+                       if Y =/= if X2 == 1 then 2 else X1 fi .
+
+  ceq [setCD45]       : CD22(X)   CD45(Y) =
+                        CD22(X)   CD45(X) if Y =/= X .
+  ceq [setCD40]       : CD40L(X)  CD40(Y) =
+                        CD40L(X)  CD40(X) if Y =/= X .
+  ceq [setCD200R]     : CD200(X)  CD200R(Y) =
+                        CD200(X)  CD200R(X) if Y =/= X .
+  ceq [setCX3CR1]     : CX3CL1(X) CX3CR1(Y) =
+                        CX3CL1(X) CX3CR1(X) if Y =/= X .
+  ceq [setTREM2]      : TREM2L(X) TREM2(Y) = 
+                        TREM2L(X) TREM2(X) if Y =/= X .
+
+  ceq [setDAP12]      : TREM2(X) DAP12(Y) = 
+                        TREM2(X) DAP12(X) if Y =/= X .
+
+  ceq [setDoks]       : CD200R(X) Dok1(Y1) Dok2(Y2) =
+                        CD200R(X) Dok1(X)  Dok2(X) if Y1 =/= X or Y2 =/= X .
+  ceq [setSHIP1]      : Dok1(X) SHIP1(Y) =
+                        Dok1(X) SHIP1(X) if Y =/= X .
+  ceq [setGAP]        : Dok1(X1) Dok2(X2) SHIP1(X3) GAP(Y) =
+                        Dok1(X1) Dok2(X2) SHIP1(X3) GAP(max(X1, X2, X3)) 
+                                               if Y =/= max(X1, X2, X3) .
+  ceq [setRas]        : RasCon(X1) GAP(X2) Ras(Y) = 
+                        RasCon(X1) GAP(X2) Ras(max(X1 - X2, 0)) 
+                                      if Y =/= max(X1 - X2, 0) . 
+
+
+  ceq [setTLR2]       : Ab(X1) a6b1(X2) CD14(X3) CD36(X4) CD47(X5) SRA(X6) TLR2(Y) =
+                        Ab(X1) a6b1(X2) CD14(X3) CD36(X4) CD47(X5) SRA(X6) 
+                        TLR2(if X2 > 0 and X3 > 0 and X4 > 0 and X5 > 0 and X6 > 0 then X1 else 0 fi)  
+                    if Y =/= if X2 > 0 and X3 > 0 and X4 > 0 and X5 > 0 and X6 > 0 then X1 else 0 fi .
+
+  ceq [setTLR4]       : Ab(X1) LPS(X2) a6b1(X3) CD14(X4) CD36(X5) CD47(X6) SRA(X7) nalo(X8) TLR4(Y) =
+                        Ab(X1) LPS(X2) a6b1(X3) CD14(X4) CD36(X5) CD47(X6) SRA(X7) nalo(X8) 
+                        TLR4(if X3 > 0 and X4 > 0 and X5 > 0 and X6 > 0 and X7 > 0 and X8 == 0 then X1 + X2 else 
+                             if X8 == 1 then 0 else 0 fi fi)   
+                    if Y =/= if X3 > 0 and X4 > 0 and X5 > 0 and X6 > 0 and X7 > 0 and X8 == 0 then X1 + X2 else 
+                             if X8 == 1 then 0 else 0 fi fi .
+
+  ceq [setSyk]        : TLR2(X1) TLR4(X2) DAP12(X3) Syk(Y) = 
+                        TLR2(X1) TLR4(X2) DAP12(X3) Syk(max(X1, X2) + X3) if Y =/= max(X1, X2) + X3 .
+
+  ceq [setGRB2]       : Syk(X) GRB2(Y) = 
+                        Syk(X) GRB2(X) if Y =/= X .
+
+  ceq [setLyn]        : TLR2(X1) TLR4(X2) dasa(X3) Lyn(Y) = 
+                        TLR2(X1) TLR4(X2) dasa(X3) 
+                        Lyn(if X3 == 1 then 0 else max(X1, X2) fi) 
+                   if Y =/= if X3 == 1 then 0 else max(X1, X2) fi .
+
+  ceq [setVaV]        : Syk(X1) Lyn(X2) Vav(Y) = 
+                        Syk(X1) Lyn(X2) Vav(min(X1 + X2, 2)) if Y =/= min(X1 + X2, 2) .
+  ceq [setRac]        : Vav(X) Rac(Y) = 
+                        Vav(X) Rac(X) if Y =/= X .
+  ceq [setNADPH]      : Rac(X1) a7nAChR(X2) NADPH(Y) = 
+                        Rac(X1) a7nAChR(X2) 
+                        NADPH(if X1 == 1 and X2 == 1 then 1 else
+                              if X1 == 1 and X2 == 0 then 2 else
+                              if X1 == 1 and X2 == 2 then 0 else
+                              if X1 == 2 and X2 <= 1 then 2 else
+                              if X1 == 2 and X2 == 2 then 1 else
+                              if X1 == 0 and X2 == 0 then 1 else
+                              1 fi fi fi fi fi fi) 
+                     if Y =/= if X1 == 1 and X2 == 1 then 1 else
+                              if X1 == 1 and X2 == 0 then 2 else
+                              if X1 == 1 and X2 == 2 then 0 else
+                              if X1 == 2 and X2 <= 1 then 2 else
+                              if X1 == 2 and X2 == 2 then 1 else
+                              if X1 == 0 and X2 == 0 then 1 else
+                              1 fi fi fi fi fi fi .
+
+  ceq [setMyD88]     : TLR2(X1) TLR4(X2) thal(X3) bort(X4) MyD88(Y) = 
+                       TLR2(X1) TLR4(X2) thal(X3) bort(X4) 
+                       MyD88(if X3 == 0 and X4 == 0 then max(X1, X2) else
+                             if X3 == 1 and X4 == 1 then max(max(X1, X2) - 1, 0) else
+                             if X3 == 1 and X4 == 0 then max(max(X1, X2) - 2, 0) else
+                             max(X1, X2) fi fi fi)
+                    if Y =/= if X3 == 0 and X4 == 0 then max(X1, X2) else
+                             if X3 == 1 and X4 == 1 then max(max(X1, X2) - 1, 0) else
+                             if X3 == 1 and X4 == 0 then max(max(X1, X2) - 2, 0) else
+                             max(X1, X2) fi fi fi .
+
+  ceq [setIRAK]      : MyD88(X1) IL1R(X2) IRAK(Y) = 
+                       MyD88(X1) IL1R(X2) IRAK(X1 + X2) if Y =/= X1 + X2 .
+
+  ceq [setTRAF6]     : IRAK(X1) TNFR(X2) bort(X3) TRAF6(Y) = 
+                       IRAK(X1) TNFR(X2) bort(X3) 
+                       TRAF6(if X3 == 0 then min(max(X1, X2), sat) else
+                             if X3 == 1 then base else
+                             base fi fi) 
+                    if Y =/= if X3 == 0 then min(max(X1, X2), sat) else
+                             if X3 == 1 then base else
+                             base fi fi .
+
+  ceq [setTRIF]      : TLR4(X) TRIF(Y) = 
+                       TLR4(X) TRIF(X) if Y =/= X .
+  ceq [setRIP1]      : TRIF(X) RIP1(Y) = 
+                       TRIF(X) RIP1(X) if Y =/= X .
+
+  ceq [setTAK1]      : RIP1(X1) TRAF6(X2) TAK1(Y) = 
+                       RIP1(X1) TRAF6(X2) 
+                       TAK1(if X1 == 0 then X2 else
+                            if X1 == 1 then min(X2, high) else
+                            if X1 == 2 then over else
+                            X2 fi fi fi)
+                   if Y =/= if X1 == 0 then X2 else
+                            if X1 == 1 then min(X2, high) else
+                            if X1 == 2 then over else
+                            X2 fi fi fi .
+
+  ceq [setMAP3K]     : TAK1(X) MAP3K(Y) =
+                       TAK1(X) MAP3K(X) if Y =/= X .
+  ceq [setMAP2K]     : MAP3K(X) MAP2K(Y) =
+                       MAP3K(X) MAP2K(X) if Y =/= X .
+  ceq [setMEK]       : MAP2K(X) MEK(Y) =
+                       MAP2K(X) MEK(X) if Y =/= X .
+
+  ceq [setERK]       : MEK(X1) GRB2(X2) Ras(X3) ERK(Y) =
+                       MEK(X1) GRB2(X2) Ras(X3) 
+                            ERK(if X2 == 0 and X3 == 0 then base else X1 fi) 
+                       if Y =/= if X2 == 0 and X3 == 0 then base else X1 fi .
+
+  ceq [setJNK]       : MEK(X1) a7nAChR(X2) CD200R(X3) JNK(Y) =
+                       MEK(X1) a7nAChR(X2) CD200R(X3) 
+                            JNK(if X2 == 1 and X3 == 1 then min(X1, sat) else
+                                if X2 == 2 or  X3 == 2 then min(X1, base) else
+                                if X2 == 0 and X3 == 0 then min(X1 + boost, sat) else
+                                0 fi fi fi)
+                       if Y =/= if X2 == 1 and X3 == 1 then min(X1, sat) else
+                                if X2 == 2 or  X3 == 2 then min(X1, base) else
+                                if X2 == 0 and X3 == 0 then min(X1 + boost, sat) else
+                                0 fi fi fi .
+
+  ceq [setp38MAPK]   : MEK(X1) a7nAChR(X2) CD200R(X3) p38MAPK(Y) =
+                       MEK(X1) a7nAChR(X2) CD200R(X3) 
+                        p38MAPK(if X2 == 1 and X3 == 1 then min(X1, sat) else
+                                if X2 == 2 or  X3 == 2 then min(X1, base) else
+                                if X2 == 0 and X3 == 0 then min(X1 + boost, sat) else
+                                0 fi fi fi)
+                       if Y =/= if X2 == 1 and X3 == 1 then min(X1, sat) else
+                                if X2 == 2 or  X3 == 2 then min(X1, base) else
+                                if X2 == 0 and X3 == 0 then min(X1 + boost, sat) else
+                                0 fi fi fi .
+
+  ceq [setAP1]       : p38MAPK(X1) JNK(X2) AP1(Y) =
+                       p38MAPK(X1) JNK(X2) AP1(min(max(X1, X2), sat)) 
+                                      if Y =/= min(max(X1, X2), sat) .
+
+  ceq [setEP2]       : PGE2(X) EP2(Y) =
+                       PGE2(X) EP2(X) if Y =/= X .
+  ceq [setGq]        : IGF2R(X) Gq(Y) =
+                       IGF2R(X) Gq(X) if Y =/= X .
+
+  ceq [setPI3K]      : IRIGF1R(X) PI3K(Y) =
+                       IRIGF1R(X) PI3K(X) if Y =/= X .
+  ceq [setAkt]       : PI3K(X) Akt(Y) =
+                       PI3K(X) Akt(X) if Y =/= X .
+  ceq [setFOXO]      : Akt(X) FOXO(Y) =
+                       Akt(X) FOXO(X) if Y =/= X .
+  ceq [setSOD]       : FOXO(X) SOD(Y) =
+                       FOXO(X) SOD(X) if Y =/= X .
+
+  ceq [setROS]       : NADPH(X1) SOD(X2) ROS(Y) =
+                       NADPH(X1) SOD(X2) 
+                            ROS(if X1 == 0 then low else
+                                if X1 == 1 and X2 <= base then base else
+                                if X1 == 2 and X2 <= base then high else
+                                if X1 == 1 and X2 >= high then low else
+                                if X1 == 2 and X2 == high then base else
+                                base fi fi fi fi fi) 
+                       if Y =/= if X1 == 0 then low else
+                                if X1 == 1 and X2 <= base then base else
+                                if X1 == 2 and X2 <= base then high else
+                                if X1 == 1 and X2 >= high then low else
+                                if X1 == 2 and X2 == high then base else
+                                base fi fi fi fi fi .
+
+  ceq [setPKC]       : Gq(X1) EP2(X2) PKC(Y) =
+                       Gq(X1) EP2(X2) 
+                            PKC(if X1 >= high then over else 
+                                if X2 == 0 and X1 > base then over else
+                                max(X1 - X2, 0) fi fi) 
+                       if Y =/= if X1 >= high then over else 
+                                if X2 == 0 and X1 > base then over else
+                                max(X1 - X2, 0) fi fi .
+
+  ceq [setRXR]       : RXRcon(X1) retino(X2) RXR(Y) = 
+                       RXRcon(X1) retino(X2) RXR(X1 + X2) if Y =/= X1 + X2 . 
+  ceq [setLXRb]      : RXR(X) LXRb(Y) =
+                       RXR(X) LXRb(X) if Y =/= X .
+
+  ceq [setIKK]       : TAK1(X1) aura(X2) IKK(Y) =
+                       TAK1(X1) aura(X2) 
+                       IKK(if X1 <  over and X2 == 1 then base - 1 else
+                           if X1 == over and X2 == 1 then base else
+                           if X2 == 0 then X1 else
+                           X1 fi fi fi) 
+                  if Y =/= if X1 <  over and X2 == 1 then base - 1 else
+                           if X1 == over and X2 == 1 then base else
+                           if X2 == 0 then X1 else
+                           X1 fi fi fi .
+
+  ceq [setIkB]       : IKK(X) IkB(Y) =
+                       IKK(X) IkB(if X <= low then over else
+                                  if X > low and X < base then high + 1 else
+                                  if X == base then high else
+                                  if X > base and X <= high then base else
+                                  if X > high then low else
+                                  base fi fi fi fi fi) 
+                         if Y =/= if X <= low then over else
+                                  if X > low and X < base then high + 1 else
+                                  if X == base then high else
+                                  if X > base and X <= high then base else
+                                  if X > high then low else
+                                  base fi fi fi fi fi . 
+
+  ceq [setNFkB]      : IkB(X1) PPARg(X2) LXRb(X3) NFkB(Y) =
+                       IkB(X1) PPARg(X2) LXRb(X3) 
+                       NFkB(if X2 == over or X3 == 3 then low else
+                            if X2 >  high and X2 < over then base - 1 else
+                            if X1 == over then low else
+                            if X1 >  high and X1 < over then base - 1 else
+                            if X1 == high then base else
+                            if X1 == base then high else
+                            if X1 == low then over else
+                            base fi fi fi fi fi fi fi)
+                   if Y =/= if X2 == over or X3 == 3 then low else
+                            if X2 >  high and X2 < over then base - 1 else
+                            if X1 == over then low else
+                            if X1 >  high and X1 < over then base - 1 else
+                            if X1 == high then base else
+                            if X1 == base then high else
+                            if X1 == low then over else
+                            base fi fi fi fi fi fi fi .
+
+  ceq [setJAK2]      : IL6R(X1) IFNR(X2) ruxo(X3) JAK2(Y) =
+                       IL6R(X1) IFNR(X2) ruxo(X3) 
+                       JAK2(if X3 == 1 and  min(max(X1, X2), sat) > base then base else
+                            if X3 == 0 then min(max(X1, X2), sat) else
+                            min(max(X1, X2), sat) fi fi) 
+                   if Y =/= if X3 == 1 and  min(max(X1, X2), sat) > base then base else
+                            if X3 == 0 then min(max(X1, X2), sat) else
+                            min(max(X1, X2), sat) fi fi .
+
+  ceq [setSTAT1]     : JAK2(X) STAT1(Y) =
+                       JAK2(X) STAT1(X) if Y =/= X . 
+
+  ceq [setSTAT3]     : JAK2(X) STAT3(Y) =
+                       JAK2(X) STAT3(X) if Y =/= X . 
+
+  ceq [setJAK1]      : IL4R(X1) IL13R(X2) ruxo(X3) JAK1(Y) =
+                       IL4R(X1) IL13R(X2) ruxo(X3) 
+                       JAK1(if X3 == 1 and  min(max(X1, X2), sat) > base then base else
+                            if X3 == 0 then min(max(X1, X2), sat) else
+                            min(max(X1, X2), sat) fi fi) 
+                   if Y =/= if X3 == 1 and  min(max(X1, X2), sat) > base then base else
+                            if X3 == 0 then min(max(X1, X2), sat) else
+                            min(max(X1, X2), sat) fi fi .
+
+  ceq [setSTAT6]     : JAK1(X) STAT6(Y) =
+                       JAK1(X) STAT6(X) if Y =/= X .
+
+  ceq [setCyto]      : ERK(X) cyto(Y) =
+                       ERK(X) cyto(X) if Y =/= X .
+  ceq [setSmad]      : TGFR(X) Smad(Y) =
+                       TGFR(X) Smad(X) if Y =/= X .  
+
+  ceq [setPhago]     : cyto(X1) Smad(X2) CD40(X3) CX3CR1(X4) phago(Y) =
+                       cyto(X1) Smad(X2) CD40(X3) CX3CR1(X4) 
+                       phago(if X3 == 2 or X4 == 2 then low else
+                             if X3 == 0 and X4 == 0 then high else
+                             if X4 == 0 and X1 == X2 then low else
+                             if X1 >= low then X2 else
+                             base fi fi fi fi)
+                    if Y =/= if X3 == 2 or X4 == 2 then low else
+                             if X3 == 0 and X4 == 0 then high else
+                             if X4 == 0 and X1 == X2 then low else
+                             if X1 >= low then X2 else
+                             base fi fi fi fi .
+
+  ceq [setProSat]    : NFkB(X1) AP1(X2) STAT3(X3) proSat(Z) = 
+                       NFkB(X1) AP1(X2) STAT3(X3)   
+                       proSat(if X1 == over then high else
+                              if X1 == low then low else
+                              if X1 >  low and X1 < base then base else
+                              if max(X2, X3) > base then high else
+                              base fi fi fi fi)  
+                  if Z =/= if X1 == over then high else
+                              if X1 == low then low else
+                              if X1 >  low and X1 < base then base else
+                              if max(X2, X3) > base then high else
+                              base fi fi fi fi . 
+
+  ceq [setProInf]    : AP1(X1) STAT3(X2) CD40(X3) CD45(X4) proSat(Z)
+                       IL1b(Y1) IL6(Y2) IL12(Y3) IL17(Y4) TNFa(Y5) IFNg(Y6) iNOS(Y7) COX2(Y8) =
+                       AP1(X1) STAT3(X2) CD40(X3) CD45(X4) proSat(Z)
+                       IL1b(min((X1 + X2 + X3) - X4, Z))
+                        IL6(min((X1 + X2 + X3) - X4, Z))
+                       IL12(min((X1 + X2 + X3) - X4, Z))
+                       IL17(min((X1 + X2 + X3) - X4, Z))
+                       TNFa(min((X1 + X2 + X3) - X4, Z))
+                       IFNg(min((X1 + X2 + X3) - X4, Z))
+                       iNOS(min((X1 + X2 + X3) - X4, Z))
+                       COX2(min((X1 + X2 + X3) - X4, Z))
+                  if Y1 =/= min((X1 + X2 + X3) - X4, Z)  
+                  or Y2 =/= min((X1 + X2 + X3) - X4, Z)
+                  or Y3 =/= min((X1 + X2 + X3) - X4, Z) 
+                  or Y4 =/= min((X1 + X2 + X3) - X4, Z) 
+                  or Y5 =/= min((X1 + X2 + X3) - X4, Z) 
+                  or Y6 =/= min((X1 + X2 + X3) - X4, Z) 
+                  or Y7 =/= min((X1 + X2 + X3) - X4, Z) 
+                  or Y8 =/= min((X1 + X2 + X3) - X4, Z) .
+
+  ceq [setAntiSat]   : PPARg(X1) LXRb(X2) STAT1(X3) STAT6(X4) antiSat(Z) = 
+                       PPARg(X1) LXRb(X2) STAT1(X3) STAT6(X4) 
+                       antiSat(if X1 == over or X2 == 3 then high else
+                               if X1 == low then low else
+                               if max(X3, X4) > base then high else
+                               base fi fi fi)
+                      if Z =/= if X1 == over or X2 == 3 then high else
+                               if X1 == low then low else
+                               if max(X3, X4) > base then high else
+                               base fi fi fi .
+
+  ceq [setAntiInf]   : STAT1(X1) STAT6(X2) antiSat(Z)
+                       IL4(Y1) IL10(Y2) IL13(Y3) TGFb(Y4) Ym1(Y5) =
+                       STAT1(X1) STAT6(X2) antiSat(Z)
+                        IL4(min(X1 + X2, Z))
+                       IL10(min(X1 + X2, Z))
+                       IL13(min(X1 + X2, Z))
+                       TGFb(min(X1 + X2, Z))
+                        Ym1(min(X1 + X2, Z))
+                  if Y1 =/= min(X1 + X2, Z)  
+                  or Y2 =/= min(X1 + X2, Z) 
+                  or Y3 =/= min(X1 + X2, Z) 
+                  or Y4 =/= min(X1 + X2, Z) 
+                  or Y5 =/= min(X1 + X2, Z) .
+
+  ceq [setArg1]      : STAT1(X1) STAT6(X2) antiSat(Z) Arg1(Y) =
+                       STAT1(X1) STAT6(X2) antiSat(Z)
+                       Arg1(if min(X1 + X2, Z) < base then low else base fi)
+                  if Y =/=  if min(X1 + X2, Z) < base then low else base fi .
+
+  ceq [setIGF1]      : STAT1(X1) STAT6(X2) PPARg(X3) IGF1(Y) =
+                       STAT1(X1) STAT6(X2) PPARg(X3) 
+                       IGF1(if X2 > high or X3 == over then high else
+                            if X1 < base then high else
+                            if X1 > base then low else
+                            base fi fi fi) 
+                   if Y =/= if X2 > high or X3 == over then high else
+                            if X1 < base then high else
+                            if X1 > base then low else
+                            base fi fi fi .
+
+  ceq [setNO]        : COX2(X) NO(Y) =
+                       COX2(X) NO(X) if Y =/= X .
+
+  crl [setProRs]     : IL1b(X1) IL1Ra(Z)    TNFa(X2) IL6(X3)  IFNg(X4)  
+                       IL1R(Y1)             TNFR(Y2) IL6R(Y3) IFNR(Y4) =>
+                       IL1b(X1) IL1Ra(Z)    TNFa(X2) IL6(X3)  IFNg(X4)  
+                       IL1R(max(X1 - Z, 0)) TNFR(X2) IL6R(X3) IFNR(X4)
+                       if Y1 =/= max(X1 - Z, 0) or Y2 =/= X2 or Y3 =/= X3 or Y4 =/= X4 .
+
+  crl [setAntiRs]    : IL4(X1)  IL13(X2)  TGFb(X3) 
+                       IL4R(Y1) IL13R(Y2) TGFR(Y3) =>
+                       IL4(X1)  IL13(X2)  TGFb(X3) 
+                       IL4R(X1) IL13R(X2) TGFR(X3)
+                       if Y1 =/= X1 or Y2 =/= X2 or Y3 =/= X3 .
+
+  crl [setIGFRs]     : IGF1(X1) glim(X2) IGF2R(Y1) IRIGF1R(Y2)   =>
+                       IGF1(X1) glim(X2) 
+                       IGF2R(if X2 == 1 then high - 1 else X1 fi) 
+                       IRIGF1R(if X2 == 1 then high else X1 fi) 
+                       if (Y1 =/= if X2 == 1 then high - 1 else X1 fi) or
+                          (Y2 =/= if X2 == 1 then high     else X1 fi) .
+
+  crl [setPGE2]      : COX2(X1) ibup(X2) PGE2(Y) =>
+                       COX2(X1) ibup(X2) PGE2(if X2 == 1 then 0 else X1 fi) 
+                                     if Y =/= if X2 == 1 then 0 else X1 fi .
+
+  crl [setPPARg]     : PKC(X1) NFkB(X2) rosi(X3) RXR(X4) PPARg(Y) =>
+                       PKC(X1) NFkB(X2) rosi(X3) RXR(X4)  
+                       PPARg(if X1 == over then over else
+                             if X2 == over and X3 < 2 and X4 < 2 then low else
+                             if X1 >= low and X1 <= over then high + 1 else
+                             if X3 == 1 and X4 == 1 then high + 1 else
+                             if X3 == 0 and X4 == 2 then high + 1 else
+                             if X3 == 1 and X4 == 2 then over else
+                             if X3 == 2 then over else
+                             base fi fi fi fi fi fi fi)
+                    if Y =/= if X1 == over then over else
+                             if X2 == over and X3 < 2 and X4 < 2 then low else
+                             if X1 >= low and X1 <= over then high + 1 else
+                             if X3 == 1 and X4 == 1 then high + 1 else
+                             if X3 == 0 and X4 == 2 then high + 1 else
+                             if X3 == 1 and X4 == 2 then over else
+                             if X3 == 2 then over else
+                             base fi fi fi fi fi fi fi .
+
+endm
+
+
+

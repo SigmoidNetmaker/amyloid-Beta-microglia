@@ -1,0 +1,55 @@
+*** this command initiates search of the module ADMICRODRUGS
+
+search [ , 20] in ADMICRODRUGS :
+*** set levels of initial inputs to rules
+IL1bini(6) IL6ini(5) IFNgini(5) TNFaini(5) 
+IL4ini(5) IL13ini(5) IGF1ini(5) TGFbini(5)
+
+*** set levels of drugs
+aura(0) bort(0) dasa(0) glim(1) ibup(1) nalo(0) nico(1) rosi(0) ruxo(0) thal(0)
+
+*** set levels of Ab and other input compounds
+Ab(1) LPS(1) retino(0)
+
+*** set initial levels of YOUNG inputs
+ACh(0) CD22(0) CD200(0) CX3CL1(0) TREM2L(0) 
+
+*** set levels of some constitutive elements
+CD40L(1) IL1Ra(1) RasCon(2) RXRcon(1)
+a6b1(1) CD14(1) CD36(1) CD47(1) SRA(1)
+
+*** set initial levels of cytokines that have 
+*** separate initial level settings
+IL1b(0) IL6(0) IFNg(0) TNFa(0) 
+IL4(0) IL13(0) IGF1(0) TGFb(0) 
+
+*** set initial levels of receptors
+TLR2(0) TLR4(0) 
+IL1R(0) IL6R(0) IFNR(0) TNFR(0)
+IL4R(0) IL13R(0) IGF2R(0) IRIGF1R(0) TGFR(0)
+a7nAChR(0) CD40(0) CD45(0) CD200R(0) CX3CR1(0) TREM2(0)
+
+*** set initial levels of signaling molecules
+DAP12(0) Syk(0) GRB2(0) Lyn(0) Vav(0) Rac(0) NADPH(0)
+MyD88(0) IRAK(0) TRAF6(0) TRIF(0) RIP1(0) TAK1(0) 
+Dok1(0) Dok2(0) SHIP1(0) GAP(0) Ras(0)
+MAP3K(0) MAP2K(0) MEK(0) ERK(0) p38MAPK(0) JNK(0) AP1(0)
+IKK(0) IkB(0) NFkB(0)
+Gq(0) PGE2(0) EP2(0) PKC(0) RXR(0) LXRb(0) PPARg(0)
+PI3K(0) Akt(0) FOXO(0) SOD(0) Smad(0)
+JAK1(0) JAK2(0) STAT1(0) STAT3(0) STAT6(0)
+
+*** set initial levels of other inflammatory mediators
+IL12(0) IL17(0) iNOS(0) COX2(0) ROS(0) NO(0) 
+
+*** set initial levels of other anti-inflammatory mediators
+Ym1(0) Arg1(0) IL10(0) cyto(0) phago(0)
+
+*** set initial levels of adjustable saturations
+proSat(0) antiSat(0)
+
+ =>! S:State 
+
+ . *** here is the period that ends the command
+
+
