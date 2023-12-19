@@ -1,0 +1,549 @@
+*** this command initiates a model check
+*** of the module ADMICRO
+
+red in MC-ADMICRO : 
+modelCheck( AM
+
+( *** set levels of initial inputs to rules
+IL1bini(6) IL6ini(5) IFNgini(5) TNFaini(5) 
+IL4ini(5) IL13ini(5) IGF1ini(5) TGFbini(5)
+
+*** set levels of Ab and pharmacological compounds
+Ab(0) LPS(0) rosi(0) retino(0)
+
+*** set initial levels of YOUNG inputs
+ACh(0) CD22(0) CD200(0) CX3CL1(0) TREM2L(0) 
+
+*** set levels of some constitutive elements
+CD40L(1) IL1Ra(1) RasCon(2) RXRcon(1)
+a6b1(1) CD14(1) CD36(1) CD47(1) SRA(1)
+
+*** set initial levels of cytokines that have 
+*** separate initial level settings
+IL1b(0) IL6(0) IFNg(0) TNFa(0) 
+IL4(0) IL13(0) IGF1(0) TGFb(0) 
+
+*** set initial levels of receptors
+TLR2(0) TLR4(0) 
+IL1R(0) IL6R(0) IFNR(0) TNFR(0)
+IL4R(0) IL13R(0) IGF2R(0) IRIGF1R(0) TGFR(0)
+a7nAChR(0) CD40(0) CD45(0) CD200R(0) CX3CR1(0) TREM2(0)
+
+*** set initial levels of signaling molecules
+DAP12(0) Syk(0) GRB2(0) Lyn(0) Vav(0) Rac(0) NADPH(0)
+MyD88(0) IRAK(0) TRAF6(0) TRIF(0) RIP1(0) TAK1(0) 
+Dok1(0) Dok2(0) SHIP1(0) GAP(0) Ras(0)
+MAP3K(0) MAP2K(0) MEK(0) ERK(0) p38MAPK(0) JNK(0) AP1(0)
+IKK(0) IkB(0) NFkB(0)
+Gq(0) PGE2(0) EP2(0) PKC(0) RXR(0) LXRb(0) PPARg(0)
+PI3K(0) Akt(0) FOXO(0) SOD(0) Smad(0)
+JAK1(0) JAK2(0) STAT1(0) STAT3(0) STAT6(0)
+
+*** set initial levels of other inflammatory mediators
+IL12(0) IL17(0) iNOS(0) COX2(0) ROS(0) NO(0) 
+
+*** set initial levels of other anti-inflammatory mediators
+Ym1(0) Arg1(0) IL10(0) cyto(0) phago(0)
+
+*** set initial levels of adjustable saturations
+proSat(0) antiSat(0)  ),
+
+*** note: conditions are all baseline and autoendocrine enabeled 
+***       unless otherwise stated (parentheticals are reminders)
+
+*** here are some young with Ab=1
+*** first bunch are reported results
+
+*** [] (IL1bEQ7 /\ IFNgEQ7) *** IL1b is 7 and IFNg is 7 always 
+                         *** conditions are: young and Ab=1
+                         *** true, so this is not autocrine when Ab=1
+*** [] NFkBeq7           *** NFkB is always 7 
+                         *** conditions are: young and Ab=1
+                         *** true 
+*** [] (IL4eq7 \/ IGF1eq3) *** IL4 is 7 and IGF1 is 3 always 
+                         *** conditions are: young and Ab=1
+                         *** counterexample, so this is autocrine when Ab=1
+*** <> (IL4eq7 /\ IGF1eq3) *** IL4 is 7 and IGF1 is 3 eventually 
+                         *** conditions are: young and Ab=1
+                         *** true
+*** [] ~ PPARgEQ7        *** PPARg is never 7 
+                         *** conditions are: young and Ab=1
+                         *** true, so PPARg is not relevant in this case
+*** [] ~ PPARgGT5        *** PPARg is never greater than 5 
+                         *** conditions are: young and Ab=1
+                         *** true, so PPARg is not relevant in this case
+*** [] (STAT1eq7 \/ STAT6eq7) *** STAT1 is always 7 or STAT6 is always 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample
+*** <> STAT6eq7          *** eventually STAT6 is 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** <> STAT1eq7          *** eventually STAT1 is 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** <> (STAT1eq7 /\ STAT6eq7) *** STAT1 is eventually 7 and STAT6 is eventually 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** ~ (IL4eq7 \/ IGF1eq3) U STAT6eq7  *** IL4 is not 7 or IGF1 is not 3 until STAT6 is 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, so IL4 is not driving its own upregulation
+                         *** not is IL4 driving IGF1 downregulation
+*** ~ (IL4eq7 /\ IGF1eq3) U STAT1eq7  *** IL4 is not 7 or IGF1 is not 3 until STAT1 is 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** STAT1eq7 => IL4eq7 /\ IGF1eq3  *** STAT1=7 implies IL4=7 and IGF1=3
+                         *** conditions are: young and Ab=1
+                         *** true
+*** [] ROSeq7            *** ROS is always 7
+                         *** conditions are: young and Ab=1
+                         *** true, because ROS gets to 7 without autocrine in this case
+*** [] phagoEQ7          *** phago is always 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, because phago depends on autocrine in this case
+*** <> phagoEQ7          *** phago is eventually 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** [] SmadEQ7           *** Smad is always high
+                         *** conditions are: young and Ab=1
+                         *** counterexample, because Smad depends on autocrine in this case
+*** <> SmadEQ7           *** Smad is eventually high
+                         *** conditions are: young and Ab=1
+                         *** true
+*** ~ SmadEQ7 U STAT1eq7 *** Smad is not 7 until STAT1 is 7
+                         *** conditions are: young and Ab=1
+                         *** true, and nontrivial since phago requires Smad and Smad requires TGFb
+*** STAT1eq7 => phagoEQ7 *** STAT1=7 implies phago=7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, because STAT1 goes to TGFb goes to Smad goes to phago
+                         *** so STAT1 can be 7 before phago goes to 7
+*** STAT1eq7 |-> phagoEQ7 *** STAT1=7 leads to phago=7
+                         *** conditions are: young and Ab=1
+                         *** true, because STAT1 goes to TGFb goes to Smad goes to phago
+*** SmadEQ7 => phagoEQ7  *** Smad=7 implies phago=7
+                         *** conditions are: young and Ab=1
+                         *** true, and nontrivial since phago requires Smad and Smad requires TGFb
+
+*** second bunch are additional, not reported
+
+*** ~ IL1bEQ7 U NFkBeq7  *** IL1b is not 7 until NFkB is 7 
+                         *** conditions are: young and Ab=1
+                         *** true, but not intertesting since both updates are equational
+*** ~ IGF1eq3 U NFkBeq7  *** IGF1 is not 3 until NFkB is 7
+                         *** conditions are: young and Ab=1
+                         *** true, and probably autocrine so not trivial
+*** ~ IL1bEQ7 U IFNgEQ7  *** IL1b is not 7 until IFNg is 7
+                         *** conditions are: young and Ab=1
+                         *** true, but uninteresting since IL1b and IFNg update togehter
+*** [] IFNgEQ7           *** IFNg is always 7 
+                         *** conditions are: young and Ab=1
+                         *** true, but uninteresting since IL1b and IFNg update togehter
+                         *** when Ab=1 so this is not autocrine
+*** [] (IL4eq7 /\ IGF1eq3) *** IL4 is 7 and IGF1 is 3 always 
+                         *** conditions are: young and Ab=1
+                         *** counterexample, so this is autocrine when Ab=1
+*** ~ IGF1eq3 U IFNgEQ7  *** IGF1 is not 3 until IFNg is 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** ~ IL4eq7 U IFNgEQ7   *** IL4 is not 7 until IFNg is 7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** ~ IL4eq7 U STAT6eq7  *** IL4 is not 7 until STAT6 is 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, so IL4 is not driving its own upregulation
+*** ~ IL4eq7 U STAT1eq7  *** IL4 is not 7 until STAT1 is 7
+                         *** conditions are: young and Ab=1
+                         *** true, so IL4 upregulation is driven by IFNg and/or IL6 via STAT1
+*** ~ (IL4eq7 /\ IGF1eq3) U STAT1eq7  *** IL4 is not 7 or IGF1 is not 3 until STAT1 is 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, so IL4 is not driving its own upregulation
+*** <> PPARgEQ7          *** eventually PPARg is 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample
+*** [] STAT1eq7          *** STAT1 is always 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample
+*** [] STAT6eq7          *** STAT6 is always 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample
+*** STAT1eq7 => IL4eq7   *** STAT1=7 implies IL4=7
+                         *** conditions are: young and Ab=1
+                         *** true
+*** STAT6eq7 => IL4eq7 /\ IGF1eq3  *** STAT6=7 implies IL4=7 and IGF1=3
+                         *** conditions are: young and Ab=1
+                         *** true
+*** STAT6eq7 => STAT1eq7 *** STAT6=7 implies STAT1=7
+                         *** conditions are: young and Ab=1
+                         *** true, but this is equational so not interesting
+*** ~ ROSeq7 U IL1bEQ7   *** ROS is not 7 until IL1b is 7
+                         *** conditions are: young and Ab=1 and autocrine disabeled
+                         *** true, because IL1b gets to 7 without autocrine in this case
+*** ~ ROSeq7 U IGF1eq3   *** ROS is not 7 until IGF1 is 3
+                         *** conditions are: young and Ab=1 and autocrine disabeled
+                         *** counterexample, ROS can depend on IGF1 but it does 
+                         *** not depend on any autocrine in this case 
+*** ~ ROSeq7 U IL4eq7    *** ROS is not 7 until IL4 is 7
+                         *** conditions are: young and Ab=1 and autocrine disabeled
+                         *** counterexample, ROS can depend on IGF1 but it does 
+                         *** not depend on autocrine in this case 
+                         *** and so it does not need IL4 to drive IGF1
+*** ~ phagoEQ7 U SmadEQ7 *** phago is not 7 until Smad is 7
+                         *** conditions are: young and Ab=1
+                         *** true, and nontrivial since phago requires Smad and Smad requires TGFb
+*** ~ SmadEQ7 U STAT6eq7 *** Smad is not 7 until STAT6 is 7
+                         *** conditions are: young and Ab=1
+                         *** counterexample, since Smad is driven by TGFb
+*** ~ phagoEQ7 U IL1bEQ7 *** phago is not 7 until IL1b is 7
+                         *** conditions are: young and Ab=1
+                         *** true, and nontrivial since phago requires ERK and ERK requires IL1b
+                         *** but phago depends more directly on Smad than on ERK
+
+*** here are some young with IL4ini=8
+*** first bunch are reported results
+
+*** [] IL1bEQ3 /\ [] IGF1eq7 *** IL1b=3 always and IGF1=7 always
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because these levels change over the course of paths
+*** [] IL1bEQ3           *** IL1b=3 always  
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because these levels change over the course of paths
+*** <> IL1bEQ3           *** eventually IL1b is 3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** [] IGF1eq7           *** always IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can start at 7 but then
+                         *** change levels on the path to the other stable state
+*** <> IGF1eq7           *** eventually IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** true, because it starts off at 7 in all paths even though it 
+                         *** can go to the other stable state where it is 5
+*** STAT6eq8 => IGF1eq7  *** STAT6=8 strongly implies that IGF1=7
+                         *** conditions are: young and IL4ini=8
+                         *** true
+                         ***
+*** IGF1eq7 => [] IGF1eq7 *** IGF1=7 implies that IGF1=7 henceforth
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can start at 7 but then
+                         *** change levels on the path to the other stable state
+*** ~ IL1bEQ3 U IGF1eq7  *** IL1b is not 3 until IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** true, since IL1b depends on IGF1 in this case and,
+                         *** importantly, IGF1 always pops up to 7 even if it doesn't stay there!
+*** IGF1eq7 |-> IL1bEQ3  *** IGF1=7 leads to IL1b=3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because because IGF1 can flip back to 5
+*** AP1eq3 => [] AP1eq3  *** AP1=3 implies that AP1=3 henceforth
+                         *** conditions are: young and IL4ini=8
+                         *** true
+*** STAT3eq3 => [] STAT3eq3  *** STAT3=3 implies that STAT3=3 henceforth
+                         *** conditions are: young and IL4ini=8
+                         *** true
+*** NFkBeq3 => [] NFkBeq3  *** NFkB=3 implies that NFkB=3 henceforth
+                         *** conditions are: young and IL4ini=8
+                         *** true
+*** IL1bEQ3 => AP1eq3    *** IL1b=3 strongly implies AP1=3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, this means that IL1b can be 3 when AP1 is not yet 3
+                         *** this means that IL1b=3 comes before AP1=3
+*** IL1bEQ3 => STAT3eq3  *** IL1b=3 strongly implies STAT3=3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, this means that IL1b can be 3 when STAT3 is not yet 3
+                         *** this means that IL1b=3 comes before STAT3=3
+*** IL1bEQ3 => NFkBeq3   *** IL1b=3 strongly implies NFkB=3
+                         *** conditions are: young and IL4ini=8
+                         *** true, this means that NFkB=3 whenever IL1b=3
+                         *** which certainly seems to mean that NFkB=3 causes IL1b=3
+*** ~ NFkBeq3 U IGF1eq7  *** another bunch of untils, all involving IGF1=7
+*** ~ PPARgEQ9 U IGF1eq7 *** conditions are: young and IL4ini=8 
+*** ~ PKCeq9 U IGF1eq7   *** all are true
+*** ~ GqEQ7 U IGF1eq7    *** they work because IGF1 at least pops up to 7 in all paths
+                         ***
+*** IGF1eq7 |-> GqEQ7    *** IGF1=7 leads to Gq=7
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** GqEQ7 => IGF1eq7     *** Gq=7 strongly implies IGF1=7
+                         *** conditions are: young and IL4ini=8
+                         *** true, and this seems circular but it makes sense because
+                         *** IGF1 gets set initially by IL4 and STAT6, but whether or not it *stays*
+                         *** on depends on whether or not it switches the transcription network
+*** GqEQ7 => [] GqEQ7    *** Gq=7 strongly implies IGF1=7 always
+                         *** conditions are: young and IL4ini=8
+                         *** true, and this proves that once Gq is activated IGF1 stays high
+
+*** second bunch are additional, not reported 
+
+*** <> IL1bEQ3 /\ <> IGF1eq7 *** IL1b=3 eventually and IGF1=7 eventually 
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** ~ IL1bEQ3 U NFkBeq3  *** a bunch of other untils
+*** ~ IL1bEQ3 U PPARgEQ9 *** conditions are: young and IL4ini=8
+*** ~ IL1bEQ3 U PKCeq9   *** all propositions are false; counterexample is the other stable state
+                         *** in which none of NFkB, PPARg, or PKC ever even pop down to 3
+*** IGF1eq7 => PKCeq9    *** IGF1eq7 strongly implies PKCeq9
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** IGF1eq7 |-> PKCeq9   *** IGF1eq7 leads to PKCeq9
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+                         ***
+*** IGF1eq7 => IL1bEQ3   *** IGF1eq7 strongly implies IL1bEQ3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, which is the other stable state
+*** ~ IFNgEQ3 U IGF1eq7  *** IFNg is not 3 until IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** true, since IFNg depends on IGF1 in this case
+*** ~ IL6eq3 U IGF1eq7   *** IL6 is not 3 until IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** true, since IL6 depends on IGF1 in this case
+*** ~ STAT1eq3 U (IFNgEQ3 \/ IL6eq3) *** STAT1 is not 3 until IFNg is 3 or IL6 is 3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, which is the other stable state
+*** ~ STAT1eq3 U IGF1eq7 *** STAT1 is not 3 until IGF1 is 7
+                         *** conditions are: young and IL4ini=8
+                         *** true
+*** ~ IGF1eq7 U PPARgEQ9 *** IGF1 is not 7 until PPARg is 9
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because IGF1 gets set to 7 by IL4ini=8
+                         *** and the rule that updates IL13R can execute before PPARg is 9
+                         *** but IGF1 stays at 7
+*** ~ IL1bEQ3 U PKCeq9   *** IL1b is not 3 until PKC is 9
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** IGF1eq7 |-> IL1bEQ3  *** IGF1=7 leads to IL1b=3
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+                         *** interestingly, IGF1 goes from 7 back to 5 in reaching the other stable state 
+*** PKCeq9 |-> IL1bEQ3   *** PKC=9 leads to IL1b=3
+                         *** conditions are: young and IL4ini=8
+                         *** true, and this is interesting in light of other stable state
+*** PKCeq9 => IL1bEQ3    *** PKC=9 strongly implies IL1b=3
+                         *** conditions are: young and IL4ini=8
+                         *** true, and again this is interesting in light of other stable state
+                         *** is "implies" (here) stronger then "leads to" (previous)?
+                         *** I like "leads to" because it seems more directly relevant
+                         *** however p |-> q means always p implies eventually q
+                         *** while p => q means always p imples q (not *eventually* q) so => is stronger
+                         *** since => is stronger than |-> go with => for other proofs
+*** GqEQ7 => IL1bEQ3     *** Gq=7 strongly implies IL1b=3
+                         *** conditions are: young and IL4ini=8
+                         *** true
+*** IGF1eq7 => GqEQ7     *** IGF1=7 strongly implies Gq=7
+                         *** conditions are: young and IL4ini=8
+                         *** counterexample, because it can go to the other stable state
+*** IL1bEQ3 => IGF1eq7   *** IL1b=3 strongly implies IGF1=7
+                         *** conditions are: young and IL4ini=8
+                         *** true, and again this seems circular but it makes sense because
+                         *** IGF1 gets set initially by IL4 and STAT6, but whether or not it *stays*
+                         *** on depends on whether or not it switches the transcription network
+                         *** if IL1b doesn't go low then that switch doesn't happen
+*** IL1bEQ3 |-> NFkBeq3  *** IL1b=3 leads to NFkB=3
+                         *** conditions are: young and IL4ini=8
+                         *** true, but what this really means is that if IL1b=3 then eventually NFkB=3
+                         *** but eventually is true if NFkB=3 is already true, so this is not helpful
+                         *** strong implies is more helpful in these cases
+*** ~ ROSeq3 U IGF1eq7   *** ROS is not 3 until IGF1 is 7
+                         *** conditions are: young and IL4ini=8 (and Ab=0 and autocrine re-enabeled)
+                         *** true, because ROS does depend on IGF1 in this case
+
+*** here are some in the "old" case with Ab and LPS both 0
+*** all in this bunch are reported results
+
+*** [] NFkBeq7           *** NFkB is always 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** counterexample
+*** <> NFkBeq7           *** NFkB is eventually 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** true
+*** [] STAT3eq7          *** STAT3 is always 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** counterexample
+*** <> STAT3eq7          *** STAT3 is eventually 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** true
+*** [] (AP1eq6 \/ (AP1eq7 \/ AP1eq8)) *** AP1 always equals 6 or 7 or 8
+                         *** constions are: old and Ab and LPS are both 0
+                         *** true
+*** [] (AP1eq6 \/ (AP1eq7 \/ AP1eq8)) /\ (p38MAPKeq6 \/ (p38MAPKeq7 \/ p38MAPKeq8)) /\ (JNKeq6 \/ (JNKeq7 \/ JNKeq8)) 
+                *** AP1 always equals 6 or 7 or 8 and p38MAPK always equals 6 or 7 or 8 and JNK always equals 6 or 7 or 8
+                *** constions are: old and Ab and LPS are both 0
+                *** true
+*** [] (p38MAPKeq6 \/ (p38MAPKeq7 \/ p38MAPKeq8)) /\ (JNKeq6 \/ (JNKeq7 \/ JNKeq8)) 
+                         *** p38MAPK always equals 6 or 7 or 8 and JNK always equals 6 or 7 or 8
+                         *** constions are: old and Ab and LPS are both 0
+                         *** true
+*** [] IL1bEQ7           *** IL1b is always 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** true 
+*** [] IFNgEQ7           *** IFNg is always 7
+                         *** conditions are: old and Ab and LPS are both 0
+                         *** true
+
+*** here are some in the "old" case with Ab and LPS both 1
+*** first bunch are reported results
+
+*** [] (IL1bEQ7 /\ IFNgEQ7) *** IL1b is 7 and IFNg is 7 always 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true, so this is not autocrine 
+*** [] (IL4eq3 /\ IGF1eq3) *** IL4 is 3 and IGF1 is 3 always 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample 
+*** [] (IL4eq3 \/ IGF1eq3) *** IL4 is 3 or IGF1 is 3 always 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** [] IL4eq3            *** IL4 is 3 always 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+                         *** of course this proves that IGF1 is not always 3
+                         *** so IGF1 getting to 3 is autocrine
+*** <> IGF1eq3           *** IGF1 is 3 eventually 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+*** [] NFkBeq9           *** NFkB is always 9
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+*** NFkBeq9 => (IL1bEQ7 /\ IFNgEQ7) *** NFkB at 9 implies that IL1b and IFNg are 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+*** [] PPARgEQ3          *** PPARg is always 3 
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** NFkBeq9 => PPARgEQ3 *** NFkB at 9 implies that PPARg is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+*** PPARgEQ3 => IL4eq3   *** PPARg at 3 implies IL4 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** PPARgEQ3 => IGF1eq3  *** PPARg at 3 implies IGF1 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample
+*** [] STAT1eq7          *** STAT1 is always 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample, so this is autocrine
+*** <> STAT1eq7          *** STAT1 is eventually 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** [] STAT6eq3          *** STAT6 is always 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample, so this is autocrine
+*** <> STAT6eq3          *** STAT6 is eventually 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** ~ IGF1eq3 U STAT6eq3 *** IGF1 is not 3 until STAT6 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample
+*** ~ IGF1eq3 U STAT1eq7 *** IGF1 is not 3 until STAT1 is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** ~ STAT1eq7 U IFNgEQ7 *** STAT1 is not 7 until IFNg is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true                       
+*** ~ STAT1eq7 U IL6eq7  *** STAT1 is not 7 until IL6 is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true   
+*** ~ STAT1eq7 U (IFNgEQ7 \/ IL6eq7) *** STAT1 is not 7 until IFNg is 7 or IL6 is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+*** ~ IGF1eq3 U (IFNgEQ7 \/ IL6eq7) *** IGF1 is not 3 until IFNg is 7 or IL6 is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true 
+
+*** second bunch are additional, not reoprted
+
+*** STAT1eq7 => IGF1eq3  *** STAT1 at 7 implies IGF1 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** true
+*** STAT6eq3 => IGF1eq3  *** STAT6 at 3 implies IGF1 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample
+*** STAT1eq7 => STAT6eq3 *** STAT1 at 7 implies STAT6 is 3
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample
+*** PPARgEQ3 => STAT1eq7 *** PPARg at 3 implies STAT1 is 7
+                         *** conditions are: old and Ab=1 and LPS=1
+                         *** counterexample, because STAT1 activation is autocrine
+
+*** here are some in the "old" case with Ab and LPS both 1 and IL4ini at 8
+*** all in the bunch are reported
+
+*** STAT6eq8 => IGF1eq7  *** STAT6=8 strongly implies that IGF1=7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** GqEQ7 => IGF1eq7     *** Gq=7 strongly implies IGF1=7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** GqEQ7 => [] GqEQ7    *** Gq=7 strongly implies IGF1=7 always
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true, and this proves that once Gq is activated IGF1 stays high
+*** ~ PKCeq9 U IGF1eq7   *** PKC is not 9 until IGF1 is 7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** ~ PPARgEQ9 U IGF1eq7 *** PPARg is not 9 until IGF1 is 7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** ~ NFkBeq3 U IGF1eq7  *** NFkB is not 3 until IGF1 is 7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** IL1bEQ3 => NFkBeq3   *** IL1b=3 implies that NFkB=3 
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** IL10eq7 => PPARgEQ9  *** IL10=7 implies that PPARg=9 
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** [] ROSeq5            *** ROS=5 alwasy
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** counterexample, which is the other stable state
+*** ~ ROSeq5 U IGF1eq7   *** ROS is not 5 until IGF1 is 7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** ROSeq7 U IGF1eq7     *** ROS is 7 until IGF1 is 7
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true, and this and the previous result shows that
+                         *** ROS is 7 until IGF1 is 7 after which ROS is 5
+*** TGFbEQ7 => PPARgEQ9  *** TGFb=7 implies that PPARg=9 
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** SmadEQ7 => TGFbEQ7   *** Smad=7 implies that TGFb=7 
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+*** SmadEQ7 => phagoEQ7  *** Smad=7 implies that phago=7 
+                         *** conditions are: old, Ab=1, LPS=1, and IL4ini=8
+                         *** true
+                        
+*** here are some in the "old" case without Ab and LPS and with IGF1ini at 8
+
+*** [] GqEQ7             *** Gq=7 always 
+                         *** conditions are: old, Ab=0, LPS=0, and IGF1ini=8
+                         *** counterexample
+*** [] (GqEQ7 \/ GqEQ8)  *** Gq=7 or Gq=8 always 
+                         *** conditions are: old, Ab=0, LPS=0, and IGF1ini=8
+                         *** true
+
+*** here are some in the "old" case with Ab but without LPS and with rosi(1)
+
+*** [] GqEQ7             *** Gq=7 always 
+                         *** conditions are: old, Ab=1, LPS=0, and rosi=1
+                         *** counterexample
+*** <> GqEQ7             *** Gq=7 eventually 
+                         *** conditions are: old, Ab=1, LPS=0, and rosi=1
+                         *** true
+*** GqEQ7 => [] GqEQ7    *** Gq=7 implies Gq=7 always 
+                         *** conditions are: old, Ab=1, LPS=0, and rosi=1
+                         *** true
+
+*** here are some in the "old" case with Ab but without LPS and with retino(1)
+
+*** [] GqEQ7             *** Gq=7 always 
+                         *** conditions are: old, Ab=1, LPS=0, and retino=1
+                         *** counterexample
+*** <> GqEQ7             *** Gq=7 eventually 
+                         *** conditions are: old, Ab=1, LPS=0, and retino=1
+
+*** GqEQ7 => [] GqEQ7    *** Gq=7 implies Gq=7 always 
+                         *** conditions are: old, Ab=1, LPS=0, and retino=1
+                         *** true
+
+ ) . *** here is the close-paren and period that ends the command
+
+
+
+
